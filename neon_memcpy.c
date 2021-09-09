@@ -9,6 +9,19 @@ void mesa__memcpy(void *restrict dst, void *restrict src, size_t len)
 
    /* If dst and src are not co-aligned, fallback to memcpy(). */
    if (((uintptr_t)d & 15) != ((uintptr_t)s & 15)) {
+      
+      padding = (16 - (((size_t)dst) & 15)) & 15;
+
+      if (padding > 0) {
+         __m128i head = _mm_loadu_si128((const __m128i*)s);
+         _mm_storeu_si128((__m128i*)d, head);
+         dst += padding;
+         src += padding;
+         len -= padding;
+      }
+
+
+      
       for(int i=len;i>=64;i=i-64){
          __m128i *dst_cacheline = (__m128i *)d;
          __m128i *src_cacheline = (__m128i *)s;
