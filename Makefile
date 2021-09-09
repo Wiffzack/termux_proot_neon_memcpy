@@ -1,5 +1,5 @@
 CC = gcc  # C compiler
-CFLAGS = -fPIC -O2 -march=armv8-a+simd+crypto+crc # C flags
+CFLAGS = -fPIC -O2 -march=armv8-a+simd+crypto+crc -funroll-loops --param max-unroll-times=200  # C flags
 LDFLAGS = -shared   # linking flags
 RM = rm -f   # rm command
 TARGET_LIB = neon_memcpy__wrapper.so  # target lib
