@@ -17,27 +17,35 @@ void mesa__memcpy(void *restrict dst, void *restrict src, size_t len)
    /* memcpy() the misaligned header. At the end of this if block, <d> and <s>
     * are aligned to a 16-byte boundary or <len> == 0.
     */
-   //omp_set_dynamic(0);     // Explicitly disable dynamic teams
-   //omp_set_num_threads(2);
-   //#pragma omp parallel for default(shared) shared(d,s)
-   #pragma omp parallel for reduction (+:d)
    for(int i=len;i>=64;i=i-64){
       __m128i *dst_cacheline = (__m128i *)d;
       __m128i *src_cacheline = (__m128i *)s;
 
-      __m128i temp1 = _mm_stream_load_si128(src_cacheline + 0);
-      __m128i temp2 = _mm_stream_load_si128(src_cacheline + 1);
-      __m128i temp3 = _mm_stream_load_si128(src_cacheline + 2);
-      __m128i temp4 = _mm_stream_load_si128(src_cacheline + 3);
+      #ifdef ALTER
+     __m128i m0 = _mm_loadu_si128(((const __m128i*)src_cacheline) + 0);
+     __m128i m1 = _mm_loadu_si128(((const __m128i*)src_cacheline) + 1);
+     __m128i m2 = _mm_loadu_si128(((const __m128i*)src_cacheline) + 2);
+     __m128i m3 = _mm_loadu_si128(((const __m128i*)src_cacheline) + 3);
+     _mm_storeu_si128(((__m128i*)dst_cacheline) + 0, m0);
+     _mm_storeu_si128(((__m128i*)dst_cacheline) + 1, m1);
+     _mm_storeu_si128(((__m128i*)dst_cacheline) + 2, m2);
+     _mm_storeu_si128(((__m128i*)dst_cacheline) + 3, m3);
+      #endif
 
-      _mm_store_si128(dst_cacheline + 0, temp1);
-      _mm_store_si128(dst_cacheline + 1, temp2);
-      _mm_store_si128(dst_cacheline + 2, temp3);
-      _mm_store_si128(dst_cacheline + 3, temp4);
 
-      d += 64;
-      s += 64;
-      //len -= 64;
+   __m128i temp1 = _mm_stream_load_si128(src_cacheline + 0);
+   __m128i temp2 = _mm_stream_load_si128(src_cacheline + 1);
+   __m128i temp3 = _mm_stream_load_si128(src_cacheline + 2);
+   __m128i temp4 = _mm_stream_load_si128(src_cacheline + 3);
+
+   _mm_store_si128(dst_cacheline + 0, temp1);
+   _mm_store_si128(dst_cacheline + 1, temp2);
+   _mm_store_si128(dst_cacheline + 2, temp3);
+   _mm_store_si128(dst_cacheline + 3, temp4);
+
+   d += 64;
+   s += 64;
+   //len -= 64;
 
    }
    /* memcpy() the tail. */
