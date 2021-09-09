@@ -7,6 +7,7 @@ void mesa__memcpy(void *restrict dst, void *restrict src, size_t len)
    char *restrict d = dst;
    char *restrict s = src;
    size_t padding;
+   int i;
 
 
    if (((uintptr_t)d & 15) != ((uintptr_t)s & 15)) {
@@ -23,7 +24,7 @@ void mesa__memcpy(void *restrict dst, void *restrict src, size_t len)
 
 
       
-      for(int i=len;i>=64;i=i-64){
+      for(i=len;i>=64;i=i-64){
          __m128i *dst_cacheline = (__m128i *)d;
          __m128i *src_cacheline = (__m128i *)s;
 
@@ -46,7 +47,7 @@ void mesa__memcpy(void *restrict dst, void *restrict src, size_t len)
    }
 
 
-   for(int i=len;i>=64;i=i-64){
+   for(i=len;i>=64;i=i-64){
       __m128i *dst_cacheline = (__m128i *)d;
       __m128i *src_cacheline = (__m128i *)s;
 
@@ -65,6 +66,7 @@ void mesa__memcpy(void *restrict dst, void *restrict src, size_t len)
    //len -= 64;
 
    }
+   len=i;
    /* memcpy() the tail. */
    if (len) {
       memcpy(d, s, len);
