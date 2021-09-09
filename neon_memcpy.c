@@ -8,7 +8,7 @@ void mesa__memcpy(void *restrict dst, void *restrict src, size_t len)
    char *restrict s = src;
    size_t padding;
 
-   /* If dst and src are not co-aligned, fallback to memcpy(). */
+
    if (((uintptr_t)d & 15) != ((uintptr_t)s & 15)) {
       
       padding = (16 - (((size_t)dst) & 15)) & 15;
