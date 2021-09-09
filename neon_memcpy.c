@@ -9,7 +9,6 @@ void mesa__memcpy(void *restrict dst, void *restrict src, size_t len)
 
    /* If dst and src are not co-aligned, fallback to memcpy(). */
    if (((uintptr_t)d & 15) != ((uintptr_t)s & 15)) {
-      printf("not used");
       memcpy(d, s, len);
       return;
    }
