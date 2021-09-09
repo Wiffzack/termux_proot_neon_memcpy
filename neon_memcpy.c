@@ -46,9 +46,6 @@ void mesa__memcpy(void *restrict dst, void *restrict src, size_t len)
    }
 
 
-   /* memcpy() the misaligned header. At the end of this if block, <d> and <s>
-    * are aligned to a 16-byte boundary or <len> == 0.
-    */
    for(int i=len;i>=64;i=i-64){
       __m128i *dst_cacheline = (__m128i *)d;
       __m128i *src_cacheline = (__m128i *)s;
