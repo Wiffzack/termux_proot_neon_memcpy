@@ -1,3 +1,8 @@
+// Source
+// https://github.com/skywind3000/FastMemcpy.git
+// https://github.com/anholt/mesa.git
+// https://github.com/DLTcollab/sse2neon.git
+
 #include <stdio.h>
 #include <string.h>
 #include <sse2neon.h>
@@ -60,7 +65,8 @@ void mesa__memcpy(void *restrict dst, void *restrict src, size_t len)
    _mm_store_si128(dst_cacheline + 1, temp2);
    _mm_store_si128(dst_cacheline + 2, temp3);
    _mm_store_si128(dst_cacheline + 3, temp4);
-
+   _mm_prefetch((const char*)(src_cacheline + 64), _MM_HINT_NTA);
+      
    d += 64;
    s += 64;
    //len -= 64;
